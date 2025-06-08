@@ -20,27 +20,32 @@ const Login = () => {
     event.preventDefault();
 
     if (state === 'Admin') {
-
-      const { data } = await axios.post(backendUrl + '/api/admin/login', { email, password })
-      if (data.success) {
-        setAToken(data.token)
-        localStorage.setItem('aToken', data.token)
-      } else {
-        toast.error(data.message)
+      try {
+        const { data } = await axios.post(backendUrl + '/api/admin/login', { email, password })
+        if (data.success) {
+          setAToken(data.token)
+          localStorage.setItem('aToken', data.token)
+        } else {
+          toast.error(data.message)
+        }
+      } catch (error) {
+        console.error(error)
+        toast.error(error.message)
       }
-
     } else {
-
-      const { data } = await axios.post(backendUrl + '/api/doctor/login', { email, password })
-      if (data.success) {
-        setDToken(data.token)
-        localStorage.setItem('dToken', data.token)
-      } else {
-        toast.error(data.message)
+      try {
+        const { data } = await axios.post(backendUrl + '/api/doctor/login', { email, password })
+        if (data.success) {
+          setDToken(data.token)
+          localStorage.setItem('dToken', data.token)
+        } else {
+          toast.error(data.message)
+        }
+      } catch (error) {
+        console.error(error)
+        toast.error(error.message)
       }
-
     }
-
   }
 
   return (

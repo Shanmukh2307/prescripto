@@ -13,9 +13,22 @@ const port = process.env.PORT || 4000
 connectDB()
 connectCloudinary()
 
+// CORS configuration
+const corsOptions = {
+  origin: ['https://prescripto-cwh4.vercel.app', 'http://localhost:5173'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'token', 'aToken', 'dToken'],
+  credentials: true,
+  optionsSuccessStatus: 204,
+  preflightContinue: false
+}
+
 // middlewares
 app.use(express.json())
-app.use(cors())
+app.use(cors(corsOptions))
+
+// Handle preflight requests
+app.options('*', cors(corsOptions))
 
 // api endpoints
 app.use("/api/user", userRouter)
