@@ -11,7 +11,7 @@ const Login = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
-  const backendUrl = import.meta.env.VITE_BACKEND_URL
+  const backendUrl = import.meta.env.VITE_BACKEND_URL?.replace(/\/$/, '') || 'http://localhost:5000'
 
   const { setDToken } = useContext(DoctorContext)
   const { setAToken } = useContext(AdminContext)
@@ -19,32 +19,35 @@ const Login = () => {
   const onSubmitHandler = async (event) => {
     event.preventDefault();
 
-    if (state === 'Admin') {
-      try {
-        const { data } = await axios.post(backendUrl + '/api/admin/login', { email, password })
+    try {
+      if (state === 'Admin') {
+        const { data } = await axios.post(`${backendUrl}/api/admin/login`, 
+          { email, password },
+          { withCredentials: true }
+        )
         if (data.success) {
           setAToken(data.token)
           localStorage.setItem('aToken', data.token)
+          toast.success('Admin login successful!')
         } else {
           toast.error(data.message)
         }
-      } catch (error) {
-        console.error(error)
-        toast.error(error.message)
-      }
-    } else {
-      try {
-        const { data } = await axios.post(backendUrl + '/api/doctor/login', { email, password })
+      } else {
+        const { data } = await axios.post(`${backendUrl}/api/doctor/login`, 
+          { email, password },
+          { withCredentials: true }
+        )
         if (data.success) {
           setDToken(data.token)
           localStorage.setItem('dToken', data.token)
+          toast.success('Doctor login successful!')
         } else {
           toast.error(data.message)
         }
-      } catch (error) {
-        console.error(error)
-        toast.error(error.message)
       }
+    } catch (error) {
+      console.error('Login error:', error)
+      toast.error(error.response?.data?.message || error.message || 'Authentication failed')
     }
   }
 
