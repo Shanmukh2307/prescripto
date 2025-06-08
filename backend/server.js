@@ -15,12 +15,16 @@ connectCloudinary()
 
 // CORS configuration
 const corsOptions = {
-  origin: ['https://prescripto-cwh4.vercel.app', 'http://localhost:5173'],
+  origin: [
+    'https://prescripto-sand-xi.vercel.app',  // Frontend
+    'https://prescripto-cwh4.vercel.app',     // Admin
+    'http://localhost:5173',                  // Frontend local
+    'http://localhost:5174'                   // Admin local
+  ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'token', 'aToken', 'dToken'],
   credentials: true,
-  optionsSuccessStatus: 204,
-  preflightContinue: false
+  optionsSuccessStatus: 204
 }
 
 // middlewares
