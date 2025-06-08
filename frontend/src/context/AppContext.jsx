@@ -7,7 +7,7 @@ export const AppContext = createContext()
 const AppContextProvider = (props) => {
 
     const currencySymbol = '₹'
-    const backendUrl = import.meta.env.VITE_BACKEND_URL
+    const backendUrl = import.meta.env.VITE_BACKEND_URL?.replace(/\/$/, '') || 'http://localhost:5000'
 
     const [doctors, setDoctors] = useState([])
     const [token, setToken] = useState(localStorage.getItem('token') ? localStorage.getItem('token') : '')
@@ -15,41 +15,36 @@ const AppContextProvider = (props) => {
 
     // Getting Doctors using API
     const getDoctosData = async () => {
-
         try {
-
-            const { data } = await axios.get(backendUrl + '/api/doctor/list')
+            const { data } = await axios.get(`${backendUrl}/api/doctor/list`)
             if (data.success) {
                 setDoctors(data.doctors)
             } else {
                 toast.error(data.message)
             }
-
         } catch (error) {
-            console.log(error)
-            toast.error(error.message)
+            console.error('Error fetching doctors:', error)
+            toast.error(error.response?.data?.message || error.message || 'Failed to fetch doctors')
         }
-
     }
 
     // Getting User Profile using API
     const loadUserProfileData = async () => {
-
         try {
-
-            const { data } = await axios.get(backendUrl + '/api/user/get-profile', { headers: { token } })
+            const { data } = await axios.get(`${backendUrl}/api/user/get-profile`, { 
+                headers: { token },
+                withCredentials: true 
+            })
 
             if (data.success) {
                 setUserData(data.userData)
             } else {
                 toast.error(data.message)
             }
-
         } catch (error) {
-            console.log(error)
-            toast.error(error.message)
+            console.error('Error loading user profile:', error)
+            toast.error(error.response?.data?.message || error.message || 'Failed to load profile')
         }
-
     }
 
     useEffect(() => {
@@ -75,7 +70,6 @@ const AppContextProvider = (props) => {
             {props.children}
         </AppContext.Provider>
     )
-
 }
 
 export default AppContextProvider

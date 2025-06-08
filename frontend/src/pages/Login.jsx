@@ -18,30 +18,38 @@ const Login = () => {
   const onSubmitHandler = async (event) => {
     event.preventDefault();
 
-    if (state === 'Sign Up') {
+    try {
+      if (state === 'Sign Up') {
+        const { data } = await axios.post(`${backendUrl}/api/user/register`, 
+          { name, email, password },
+          { withCredentials: true }
+        )
 
-      const { data } = await axios.post(backendUrl + '/api/user/register', { name, email, password })
-
-      if (data.success) {
-        localStorage.setItem('token', data.token)
-        setToken(data.token)
+        if (data.success) {
+          localStorage.setItem('token', data.token)
+          setToken(data.token)
+          toast.success('Registration successful!')
+        } else {
+          toast.error(data.message)
+        }
       } else {
-        toast.error(data.message)
+        const { data } = await axios.post(`${backendUrl}/api/user/login`, 
+          { email, password },
+          { withCredentials: true }
+        )
+
+        if (data.success) {
+          localStorage.setItem('token', data.token)
+          setToken(data.token)
+          toast.success('Login successful!')
+        } else {
+          toast.error(data.message)
+        }
       }
-
-    } else {
-
-      const { data } = await axios.post(backendUrl + '/api/user/login', { email, password })
-
-      if (data.success) {
-        localStorage.setItem('token', data.token)
-        setToken(data.token)
-      } else {
-        toast.error(data.message)
-      }
-
+    } catch (error) {
+      console.error('Login/Register error:', error)
+      toast.error(error.response?.data?.message || error.message || 'Authentication failed')
     }
-
   }
 
   useEffect(() => {
